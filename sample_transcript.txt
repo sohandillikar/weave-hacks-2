@@ -1,0 +1,231 @@
+# User Research Interview Transcript
+**Date:** October 8, 2025  
+**Interviewer:** Sarah Chen (Product Manager, Weights & Biases)  
+**Participant:** Alex Thompson (Senior ML Engineer, TechVision AI)  
+**Duration:** 47 minutes
+
+---
+
+**Sarah:** Okay great we're recording now um so just to start off can you tell me a little bit about your role and what you're working on?
+
+**Alex:** Yeah sure so I'm uh I'm a senior ML engineer at TechVision we're working on computer vision models mostly for um you know retail analytics shelf detection that kind of thing and-
+
+**Sarah:** Mmhmm
+
+**Alex:** -and I've been here about two years now but I've been using wandb for like probably three years? maybe longer across different companies
+
+**Sarah:** Got it okay and how big is your team that's working on these models?
+
+**Alex:** So right now we have uh let's see five ML engineers including me and then we have two data scientists who are kind of adjacent they do more of the like exploratory analysis stuff but they also log runs sometimes not as consistently as we'd like but yeah
+
+**Sarah:** Interesting okay so mixed usage across the team
+
+**Alex:** Yeah exactly it's um it's kind of a pain point actually like getting everyone on the same page about what to log and how to organize projects
+
+**Sarah:** Okay we'll definitely come back to that. So walk me through like a typical day or week how are you using wandb in your actual workflow?
+
+**Alex:** Um okay so usually I'll start my day by checking the dashboard to see if any overnight runs finished because we usually kick off long training jobs before we leave and-
+
+**Sarah:** How long are these runs typically?
+
+**Alex:** Oh it depends like anywhere from 8 hours to like 48 hours for the really big ones we're training on some pretty large datasets and um yeah so I'll check those first thing see if anything crashed or if the metrics look good
+
+**Sarah:** And when you say check the metrics what are you actually looking at?
+
+**Alex:** Right so we're mostly looking at um validation accuracy loss curves obviously and then we have some custom metrics for our specific use case like detection precision at different IoU thresholds and uh inference time is big for us too because these models need to run on edge devices
+
+**Sarah:** Okay so performance metrics are critical
+
+**Alex:** Yeah super critical like if a model is accurate but too slow it's basically useless for our use case you know? So we log all that stuff and then I'll usually compare it to our baseline model or like the previous best run
+
+**Sarah:** And how do you do that comparison is that easy?
+
+**Alex:** Um it's pretty good like the comparison table works well most of the time but sometimes I find myself clicking back and forth between tabs more than I'd like? Like if I want to see the training curves side by side with the validation curves and also look at the system metrics it gets a little... cluttered I guess
+
+**Sarah:** Cluttered how?
+
+**Alex:** Just like too many windows open or I have to remember which run was which especially if I'm comparing like four or five runs at once which happens a lot when we're doing hyperparameter sweeps
+
+**Sarah:** Speaking of sweeps how often are you using the sweeps feature?
+
+**Alex:** Oh all the time yeah sweeps are great um we probably run sweeps like at least once a week sometimes more if we're really iterating on something new
+
+**Sarah:** And how's that experience?
+
+**Alex:** It's good overall I mean the yaml configuration is fine once you get used to it but there's definitely a learning curve there like new people on the team always need help setting those up initially
+
+**Sarah:** What specific parts do they struggle with?
+
+**Alex:** Um mostly understanding the search strategy like when to use grid search versus random versus bayesian and also just the syntax itself can be finicky you know one wrong indentation and it doesn't work
+
+**Sarah:** Yeah yaml can be tricky. So what happens after you review your overnight runs where does your workflow go from there?
+
+**Alex:** Right so if something looks promising I'll usually uh I'll tag it or add it to a report and then share it with the team in slack we have a channel just for model updates
+
+**Sarah:** You share it through slack?
+
+**Alex:** Yeah we'll post the link to the run or the report in slack and then people can comment there or sometimes they'll add comments directly in wandb but honestly most of the discussion happens in slack
+
+**Sarah:** Interesting why do you think that is?
+
+**Alex:** I don't know I think people are just more comfortable with slack like that's where they already are all day? And the notifications work better there. Like I don't always see wandb comments right away unless I'm specifically looking for them
+
+**Sarah:** Okay that's really helpful feedback um so you mentioned reports how often are you creating those?
+
+**Alex:** Not as often as I should probably like maybe once a month? Usually when we're doing quarterly planning or if we need to present results to leadership
+
+**Sarah:** And why not more frequently?
+
+**Alex:** Honestly it's kind of time consuming like I know the report feature is pretty flexible but that also means there's a lot of manual setup involved you know dragging in the right visualizations formatting everything making it look nice
+
+**Sarah:** What would make you use reports more?
+
+**Alex:** Um I think if there were more templates? Like pre-built templates for common scenarios like model comparison or experiment summary or something. Or even just being able to save my own templates would be helpful because I end up recreating the same structure every time
+
+**Sarah:** That makes sense. Okay let's talk about collaboration a bit more you mentioned your team doesn't always log consistently what does that look like?
+
+**Alex:** Yeah so like I said we have these two data scientists and they'll sometimes just run experiments locally and not log anything to wandb at all or they'll log it but with really vague run names like "test1" or "experiment_final" which makes it impossible to find later
+
+**Sarah:** laughs yeah we've heard that before
+
+**Alex:** Right? And then even among the ML engineers we don't have great conventions like some people log every single hyperparameter including ones that never change and some people barely log anything so when you're trying to reproduce someone else's work it can be really frustrating
+
+**Sarah:** Have you tried to establish team conventions or standards?
+
+**Alex:** We've talked about it yeah and we even have a document somewhere with best practices but nobody really follows it consistently there's no enforcement mechanism you know?
+
+**Sarah:** What would help with that?
+
+**Alex:** I mean maybe if there were like workspace-level settings or templates that could enforce certain naming conventions or required fields that would help. Or even just better onboarding for new team members like a checklist or guided setup
+
+**Sarah:** Okay this is great feedback. Let me shift gears a little bit what features do you wish wandb had that it doesn't have now?
+
+**Alex:** Hmm that's a good question um let me think... oh okay so one thing that would be really helpful is better integration with our data versioning we use DVC for dataset versioning and it would be awesome if that was more tightly integrated with wandb right now we have to manually log dataset versions as metadata but it's not as seamless as it could be
+
+**Sarah:** What would seamless look like to you?
+
+**Alex:** Like if I could see exactly which dataset version was used for each run without having to dig through metadata and maybe even diff datasets or see dataset lineage like how we can see model lineage that would be really powerful
+
+**Sarah:** Interesting okay what else?
+
+**Alex:** Um cost tracking would be huge for us like we're spending a ton on compute and it would be great to see the actual dollar cost next to each run or in aggregate so we can make better decisions about what's worth running
+
+**Sarah:** Are you tracking that anywhere now?
+
+**Alex:** We have a separate dashboard in AWS where we look at costs but it's not connected to specific runs so it's hard to correlate like "oh this experiment cost us $500" you know? We just see a big monthly bill
+
+**Sarah:** Right that's a pain point I've heard before. What about on the inference side do you use wandb for any production monitoring or is it mostly training?
+
+**Alex:** Mostly training yeah we have started experimenting with um what's it called the LLM evaluation stuff? Weave?
+
+**Sarah:** Yes exactly
+
+**Alex:** Yeah we're just starting to look at that for some of our newer projects that use LLMs but for our main computer vision work it's all training and experimentation we use a different tool for production monitoring
+
+**Sarah:** Can I ask what tool?
+
+**Alex:** We use Datadog for production monitoring it's kind of overkill but that's what the DevOps team chose and it's hard to switch now
+
+**Sarah:** Would you want to consolidate that into wandb if the features were there?
+
+**Alex:** Maybe? I think it depends on the pricing and how well it integrates with our existing deployment pipeline but yeah in principle having everything in one place would be nice less context switching
+
+**Sarah:** Makes sense. Um let's talk about pain points what's the most frustrating thing about using wandb right now?
+
+**Alex:** Oh man okay so the thing that drives me crazy is when runs fail to log properly like we'll have a run that crashes or gets interrupted and then the data is incomplete or corrupted and there's not really a good way to recover it
+
+**Sarah:** How often does that happen?
+
+**Alex:** I don't know maybe like 5-10% of the time? It's not super frequent but it's often enough that it's a problem especially for those really long runs that take days because then you've wasted all that time and compute
+
+**Sarah:** And what typically causes those failures?
+
+**Alex:** Network issues mostly like we're training on on-prem servers and sometimes the connection to wandb's cloud just drops and it doesn't reconnect gracefully. Or sometimes it's our fault like we forget to call wandb.finish() and then the run just stays in a weird state
+
+**Sarah:** Would better offline support help with that?
+
+**Alex:** Yeah definitely like if it could queue up all the logging locally and then sync when the connection is restored that would be great. I know there's some offline mode but it's not super reliable in my experience
+
+**Sarah:** Okay good to know. What else is frustrating?
+
+**Alex:** The UI can be slow sometimes especially when loading runs with a lot of data points like if we're logging metrics every step and there are thousands of steps it can take forever to load the charts
+
+**Sarah:** Do you find yourself logging less frequently because of that?
+
+**Alex:** Sometimes yeah which is not ideal because then we lose granularity but we have to make trade-offs
+
+**Sarah:** Are there specific chart types that are slower than others?
+
+**Alex:** Um the parallel coordinates plot is really slow and the scatter plots can be laggy too if there are lots of points. The line charts are usually fine though
+
+**Sarah:** Okay that's helpful. Let me ask about a few specific features how often do you use artifacts?
+
+**Alex:** Oh we use artifacts all the time yeah that's probably one of our most-used features we log model checkpoints as artifacts and sometimes datasets too
+
+**Sarah:** And how's that working for you?
+
+**Alex:** It's pretty good um the versioning is nice and being able to see which runs produced which artifacts is helpful. One thing though is that it can get expensive storage-wise like we have hundreds of model checkpoints and they add up
+
+**Sarah:** Are you managing that somehow?
+
+**Alex:** We try to delete old ones that we don't need anymore but there's no like automatic retention policy or anything so it's manual and people forget
+
+**Sarah:** Would you want automated retention policies?
+
+**Alex:** Yeah that would be great like "automatically delete artifacts older than 90 days unless they're tagged as important" or something like that
+
+**Sarah:** Okay noted. What about the table visualizations do you use those much?
+
+**Alex:** Uh yeah we use them for logging predictions like we'll log sample images with predicted versus ground truth bounding boxes and that's super useful for debugging
+
+**Sarah:** What works well about that?
+
+**Alex:** Being able to visually inspect where the model is failing is invaluable like you can see patterns like "oh it's always missing small objects" or whatever. The filtering and sorting on the tables is pretty good too
+
+**Sarah:** Any pain points with tables?
+
+**Alex:** They can get really big and unwieldy if you log too many samples like we try to limit it to 100 or 200 samples per epoch but even that can be a lot to load. And the filtering UI could be more intuitive I think there's been times where I couldn't figure out how to create the filter I wanted
+
+**Sarah:** Can you give me an example?
+
+**Alex:** Um like if I want to filter to "images where prediction confidence is less than 0.7 AND the object is labeled as 'small'" that kind of compound filter is not super obvious how to set up
+
+**Sarah:** Got it okay. We're running close on time let me ask just a couple more questions um if you could change one thing about wandb what would it be?
+
+**Alex:** Just one thing?
+
+**Sarah:** laughs your top priority
+
+**Alex:** Okay um I think I would want better collaboration features like the ability to comment and discuss within wandb more effectively and have those conversations actually be useful and trackable maybe threaded comments or even like a lightweight project management layer where we could turn discussions into action items
+
+**Sarah:** Interesting so more of a collaborative workspace feel
+
+**Alex:** Yeah exactly like right now it's great for tracking experiments but the actual collaboration and decision-making happens elsewhere and it would be nice to bring that into the same tool
+
+**Sarah:** That makes a lot of sense. Okay last question is there anything you think we should be building that I haven't asked about?
+
+**Alex:** Hmm let me think... oh you know what would be cool is some kind of automated insights or recommendations like "hey we noticed your learning rate is too high based on these loss curves" or "this hyperparameter doesn't seem to affect your metric much" just surfacing patterns that might not be obvious
+
+**Sarah:** Like an AI assistant for experiment analysis?
+
+**Alex:** Yeah exactly that would be really valuable especially for junior engineers who might not know what to look for
+
+**Sarah:** I love that idea. Okay well this has been super helpful is there anything else you want to share or any feedback you didn't get to mention?
+
+**Alex:** Um I don't think so? Oh actually one small thing the mobile app is pretty limited like I'll sometimes want to check on a run while I'm away from my desk and the app doesn't show everything
+
+**Sarah:** What specifically would you want on mobile?
+
+**Alex:** Just like the basic metrics and charts I'm not expecting to do full analysis on my phone but at least see if something is obviously broken or if I should cancel a run remotely
+
+**Sarah:** Makes sense. Okay awesome well thank you so much for your time this is exactly the kind of feedback we need
+
+**Alex:** Yeah no problem happy to help you guys have built a great product already so excited to see where it goes
+
+**Sarah:** Thanks! I'll send you a follow-up email with a gift card for your time and if we have any clarifying questions I might reach out
+
+**Alex:** Sounds good take care
+
+**Sarah:** You too bye
+
+**Alex:** Bye

@@ -1,70 +1,193 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import * as React from "react";
+import type { Issue } from "@/types/issue";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ImprovementChart } from "@/components/improvement-chart";
+import { getIssues } from "@/lib/data";
+import { AppSidebar, type DashboardView } from "@/components/app-sidebar";
+import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { ModeToggle } from "@/components/theme-toggle";
+
+/**
+ * Issue Triage Dashboard - Main Page
+ *
+ * Displays a comprehensive dashboard for managing and prioritizing software issues.
+ * Features a sidebar navigation interface with two main sections:
+ * - Issues: Displays the triage catalog in a responsive data table with priority indicators and action items
+ * - Improvement: Shows exponential growth metrics through interactive charts
+ */
+
+/**
+ * Main dashboard component that renders the issue triage interface
+ *
+ * Fetches issues data and presents it in a sidebar layout with visualization options.
+ * The Issues view renders a responsive table that highlights priority, descriptions,
+ * and structured action items for each issue.
+ *
+ * @returns The main dashboard page with sidebar navigation for Issues and Improvement tracking
+ */
+export default function IssueDashboard() {
+  const [activeView, setActiveView] = React.useState<DashboardView>("issues");
+  const [issuesData, setIssuesData] = React.useState<Issue[]>([]);
+
+  // Fetch issues data on component mount
+  React.useEffect(() => {
+    getIssues().then(setIssuesData);
+  }, []);
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image className="dark:invert" src="/next.svg" alt="Next.js logo" width={180} height={38} priority />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">Save and see your changes instantly.</li>
-        </ol>
+    <>
+      <AppSidebar activeView={activeView} onViewChange={setActiveView} />
+      <SidebarInset>
+        <div className="min-h-screen bg-background">
+          {/* Header Section */}
+          <header className="border-b border-border bg-card sticky top-0 z-40">
+            <div className="flex items-center gap-4 px-6 py-4">
+              <SidebarTrigger />
+              <div className="flex-1">
+                <h1 className="text-xl font-bold tracking-tight text-foreground">
+                  {activeView === "issues" ? "Issue Triage" : "Improvement Metrics"}
+                </h1>
+              </div>
+              <p className="text-sm text-muted-foreground hidden md:block">
+                Manage and prioritize software issues efficiently
+              </p>
+              <ModeToggle />
+            </div>
+          </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image className="dark:invert" src="/vercel.svg" alt="Vercel logomark" width={20} height={20} />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          {/* Main Content */}
+          <main className="px-4 sm:px-6 py-8 max-w-full">
+            {activeView === "issues" && <IssueTable issues={issuesData} />}
+            {activeView === "improvement" && (
+              <div className="flex flex-col gap-6">
+                <ImprovementChart />
+              </div>
+            )}
+          </main>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image aria-hidden src="/file.svg" alt="File icon" width={16} height={16} />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image aria-hidden src="/window.svg" alt="Window icon" width={16} height={16} />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image aria-hidden src="/globe.svg" alt="Globe icon" width={16} height={16} />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </SidebarInset>
+    </>
+  );
+}
+
+/**
+ * Permitted priority levels for issues displayed within the dashboard table.
+ */
+type IssuePriority = "high" | "medium" | "low";
+
+/**
+ * Look-up metadata describing how to render each issue priority in the table,
+ * including accessible labels and styled badges.
+ */
+const ISSUE_PRIORITY_METADATA: Record<
+  IssuePriority,
+  {
+    readonly label: string;
+    readonly badgeClassName: string;
+  }
+> = {
+  high: { label: "High", badgeClassName: "bg-red-500 text-white" },
+  medium: { label: "Medium", badgeClassName: "bg-yellow-500 text-black" },
+  low: { label: "Low", badgeClassName: "bg-green-500 text-white" }
+};
+
+/**
+ * Strongly typed properties for the `IssueTable` component.
+ */
+type IssueTableProps = {
+  /**
+   * Complete list of issues to be surfaced within the triage table.
+   */
+  readonly issues: Issue[];
+};
+
+/**
+ * Responsive table view for the issue triage catalog.
+ *
+ * Renders structured rows with priority badges, descriptions, and actionable items.
+ * Designed to provide quick scanning for priority while remaining readable on smaller viewports.
+ *
+ * @param props - Component properties
+ * @param props.issues - The issues that should populate the table body
+ * @returns The issue table component
+ */
+function IssueTable({ issues }: IssueTableProps) {
+  return (
+    <div className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+      <div className="overflow-x-auto">
+        <Table>
+          <TableCaption>
+            {`Tracking ${issues.length} ${issues.length === 1 ? "issue" : "issues"} across priority levels.`}
+          </TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="min-w-[150px]">Issue</TableHead>
+              <TableHead className="min-w-[120px]">Priority</TableHead>
+              <TableHead className="min-w-[200px]">Description</TableHead>
+              <TableHead className="min-w-[200px]">Action Items</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {issues.map((issue) => (
+              <IssueTableRow key={issue.id} issue={issue} />
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
+  );
+}
+
+/**
+ * Strongly typed properties for the `IssueTableRow` component.
+ */
+type IssueTableRowProps = {
+  /**
+   * Specific issue to render within a table row.
+   */
+  readonly issue: Issue;
+};
+
+/**
+ * Table row implementation for a single issue.
+ *
+ * Breaks the issue into structured cells that highlight metadata and provide
+ * a readable list of next steps.
+ *
+ * @param props - Component properties
+ * @param props.issue - The issue data rendered in the table row
+ * @returns The populated table row element
+ */
+function IssueTableRow({ issue }: IssueTableRowProps) {
+  const priority = issue.priority as IssuePriority;
+  const { label, badgeClassName } = ISSUE_PRIORITY_METADATA[priority];
+
+  return (
+    <TableRow>
+      <TableCell className="align-top">
+        <span className="text-card-foreground text-sm font-semibold break-words">{issue.title}</span>
+      </TableCell>
+      <TableCell className="align-top">
+        <span
+          className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium whitespace-nowrap ${badgeClassName}`}
+        >
+          {label}
+        </span>
+      </TableCell>
+      <TableCell className="align-top">
+        <p className="text-card-foreground text-sm leading-relaxed break-words">{issue.description}</p>
+      </TableCell>
+      <TableCell className="align-top">
+        <ol className="list-decimal list-inside space-y-2 text-sm leading-relaxed text-card-foreground break-words">
+          {issue.actionsItems.map((action) => (
+            <li key={action.id} className="break-words">
+              {action.item}
+            </li>
+          ))}
+        </ol>
+      </TableCell>
+    </TableRow>
   );
 }

@@ -1,4 +1,4 @@
-import { ActionItem } from "./ActionItem";
+import { ActionItem } from "./action-item";
 
 export type Priority = "low" | "medium" | "high";
 
